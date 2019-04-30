@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: buildagent-cpp-project-template
+spec:
+  containers:
+  - name: jnlp
+    image: registry.nutonomy.com:5000/nu/jnlp-slave:3.19-1-lfs
+    imagePullPolicy: Always
+    workingDir: /var/lib/jenkins
+  - name: buildagent
+    image: registry.nutonomy.com:5000/cppsampleproj/buildagent:latest
+    imagePullPolicy: Always
+    resources:
+      requests:
+        cpu: "1"
+    workingDir: /var/lib/jenkins
+    command:
+    - cat
+    tty: true
+    securityContext:
+      capabilities:
+        add: ["SYS_ADMIN"]
+    volumeMounts:
+    - mountPath: /root/.klocwork
+      name: klocwork-ltoken
+    - mountPath: /home/kw/dist181
+      name: klocwork-dist181
+  imagePullSecrets:
+    - name: regcredjenkins
+  volumes:
+  - name: klocwork-dist181
+    persistentVolumeClaim:
+      claimName: klocwork-dist181
+  - name: klocwork-ltoken
+    secret:
+      secretName: klocwork-ltoken
+      items:
+      - key: klocwork-ltoken
+        path: ltoken

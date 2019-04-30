@@ -1,0 +1,2 @@
+add_executable(Sanitizer-example EXCLUDE_FROM_ALL EXCLUDE_FROM_SANITIZE_ADDRESS Sanitizer-example.cpp)
+target_link_libraries(Sanitizer-example CONAN_PKG::gtest)
