@@ -1,8 +1,10 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.14)
 
 set(PROJECT_NAME MyProject)
 
 project(${PROJECT_NAME})
+
+SET(CMAKE_CXX_COMPILER clang)
 
 # Let CMake paths to easily find our custom CMake modules
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)

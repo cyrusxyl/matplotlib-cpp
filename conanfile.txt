@@ -1,8 +1,7 @@
 [requires]
-gtest/1.8.1@nutonomy/stable
+gtest/1.8.1@bincrafters/stable
 
 [generators]
 cmake
 
 [options]
-gtest:nolint_patch=True
