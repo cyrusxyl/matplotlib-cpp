@@ -4,7 +4,7 @@ set(PROJECT_NAME MyProject)
 
 project(${PROJECT_NAME})
 
-set(CMAKE_CXX_COMPILER clang)
+set(CMAKE_CXX_COMPILER g++)
 
 # Let CMake paths to easily find our custom CMake modules
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
