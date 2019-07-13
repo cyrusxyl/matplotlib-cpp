@@ -1,0 +1,11 @@
+---
+BasedOnStyle: Chromium
+AccessModifierOffset: '-4'
+BreakBeforeBraces: Allman
+Cpp11BracedListStyle: 'true'
+IndentWidth: '4'
+SortIncludes: 'true'
+SortUsingDeclarations: 'true'
+Standard: Cpp11
+
+...
