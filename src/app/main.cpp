@@ -1,15 +1,12 @@
-#include "TempClass.hpp"
+#include "router.hpp"
 
 #include <iostream>
 
 int main(int /*argc*/, char** /*argv*/)
 {
-    TempClass testObject;
-
-    std::cout << "Test object data : " << testObject.getData() << std::endl;
-
-    testObject.setData(12);
-    std::cout << "Test object data : " << testObject.getData() << std::endl;
-
+    router::Request a;
+    router::Request b;
+    std::cout << a.id << '\n';
+    std::cout << b.id << '\n';
     return EXIT_SUCCESS;
 }

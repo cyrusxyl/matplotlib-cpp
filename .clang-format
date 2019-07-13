@@ -1,6 +1,11 @@
 ---
 BasedOnStyle: Chromium
 AccessModifierOffset: '-4'
+AllowAllParametersOfDeclarationOnNextLine: 'false'
+AllowShortBlocksOnASingleLine: 'false'
+AllowShortCaseLabelsOnASingleLine: 'true'
+AllowShortIfStatementsOnASingleLine: 'false'
+AllowShortLoopsOnASingleLine: 'false'
 BreakBeforeBraces: Allman
 Cpp11BracedListStyle: 'true'
 IndentWidth: '4'
