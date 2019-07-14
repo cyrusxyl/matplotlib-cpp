@@ -57,6 +57,7 @@ find_package(StaticAnalysis)
 
 # Directories to include in the build.
 include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(${PROJECT_SOURCE_DIR}/thirdparty)
 
 option(BUILD_APP "Build Example App" ON)
 option(BUILD_DOCS "Build Doxygen documentation" OFF)

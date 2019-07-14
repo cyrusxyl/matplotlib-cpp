@@ -116,7 +116,7 @@ struct RequestFactory
             new_request.id = id++;
             new_request.name = {name.GetString()};
             new_request.pickup = {start[0].GetInt(), start[0].GetInt()};
-            new_request.dropoff= {end[0].GetInt(), end[0].GetInt()};
+            new_request.dropoff = {end[0].GetInt(), end[0].GetInt()};
             requests.push_back(new_request);
         }
         return requests;
