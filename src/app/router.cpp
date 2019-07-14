@@ -28,8 +28,7 @@ void Router::navigate(std::vector<Request> const& requests)
         _pickups[coord_to_idx(request.pickup)].insert(request.id);
         _dropoffs[coord_to_idx(request.dropoff)].insert(request.id);
     }
-    _visited = {};
-    _curr_route = BFS();
+    _curr_route = Astar();
     auto coord = _curr_route.front();
     _curr_route.pop();
     update_state(_curr_state, coord, true);
@@ -144,6 +143,7 @@ void Router::update_state(State& state, Coord const& coord, bool print) const no
 
 Route Router::BFS()
 {
+    _visited = {};
     std::queue<State> queue;
     // in case we can pickup right away
 
@@ -166,6 +166,60 @@ Route Router::BFS()
         }
     }
     throw std::runtime_error("no route found");
+}
+
+Route Router::Astar()
+{
+    _visited = {};
+    auto compare = [this](State const& left, State const& right) -> bool {
+        return (static_cast<int>(left.route.size()) + h_cost(left)) >
+               (static_cast<int>(right.route.size()) + h_cost(right));
+    };
+    std::priority_queue<State, std::vector<State>, std::function<bool(State, State)>> queue(
+        compare);
+    // in case we can pickup right away
+
+    auto copy_state = _curr_state;
+    copy_state.route.push(copy_state.car_location);
+    update_state(copy_state, copy_state.car_location);
+    queue.push(copy_state);
+    while (!queue.empty())
+    {
+        auto cs = queue.top();
+        if (cs.fullfilled.size() == _requests.size())
+        {
+            return cs.route;
+        }
+        queue.pop();
+        _visited.insert(cs);
+        for (auto const& ns : get_neighbors(cs))
+        {
+            queue.push(ns);
+        }
+    }
+    throw std::runtime_error("no route found");
+}
+
+int Router::h_cost(State const& state)
+{
+    int h = 0;
+    for (auto const& kvpair : _requests)
+    {
+        auto const& id = kvpair.first;
+        auto const& request = kvpair.second;
+        if (state.fullfilled.find(id) != state.fullfilled.end())
+        {
+            continue;
+        }
+        if (state.passenges.find(id) != state.passenges.end())
+        {
+            h = std::max(h, state.car_location.distance(request.dropoff));
+            continue;
+        }
+        h = std::max(h, state.car_location.distance(request.pickup) +
+                            request.pickup.distance(request.dropoff));
+    }
+    return h;
 }
 
 std::vector<State> Router::get_neighbors(const State& curr) const noexcept

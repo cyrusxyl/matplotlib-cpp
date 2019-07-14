@@ -42,6 +42,8 @@ private:
                          std::set<int>& fullfilled,
                          bool print = false) const noexcept;
     Route BFS();
+    Route Astar();
+    int h_cost(State const& state);
     void traverse(Route route);
     void update_state(State& state, Coord const& coord, bool print = false) const noexcept;
     void cleanup_request();
