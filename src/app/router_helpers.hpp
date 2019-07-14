@@ -2,7 +2,6 @@
 #include <rapidjson/document.h>
 #include <array>
 #include <boost/container_hash/hash.hpp>
-#include <optional>
 #include <queue>
 #include <set>
 #include <vector>

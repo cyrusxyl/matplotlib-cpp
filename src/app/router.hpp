@@ -11,14 +11,13 @@ public:
     Router(int x, int y, Coord start);
     ~Router();
     void navigate(std::vector<Request> const&);
-    std::vector<State> get_neighbors(State const& curr) const noexcept;
 
 private:
     const int _map_x{0};
     const int _map_y{0};
     State _curr_state;
     Route _curr_route;
-    std::unordered_set<State, State_hash, State_compare> _visited{};
+    mutable std::unordered_set<State, State_hash, State_compare> _visited{};
     std::unordered_map<int, Request> _requests{};
     std::unordered_map<int, std::set<int>> _pickups{};
     std::unordered_map<int, std::set<int>> _dropoffs{};
@@ -41,10 +40,12 @@ private:
                          std::set<int>& passenges,
                          std::set<int>& fullfilled,
                          bool print = false) const noexcept;
-    Route BFS();
-    Route Astar();
-    int h_cost(State const& state);
-    void traverse(Route route);
+    Route BFS() const;
+    Route Astar() const;
+    std::vector<State> get_neighbors(State const& curr) const noexcept;
+    int h_cost(State const& state) const noexcept;
+    
+    void traverse(Route route) const noexcept;
     void update_state(State& state, Coord const& coord, bool print = false) const noexcept;
     void cleanup_request();
 };

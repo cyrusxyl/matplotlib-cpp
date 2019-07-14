@@ -142,7 +142,7 @@ void Router::update_state(State& state, Coord const& coord, bool print) const no
     }
 }
 
-Route Router::BFS()
+Route Router::BFS() const
 {
     _visited = {};
     std::queue<State> queue;
@@ -169,7 +169,7 @@ Route Router::BFS()
     throw std::runtime_error("no route found");
 }
 
-Route Router::Astar()
+Route Router::Astar() const
 {
     _visited = {};
     auto compare = [this](State const& left, State const& right) -> bool {
@@ -201,7 +201,7 @@ Route Router::Astar()
     throw std::runtime_error("no route found");
 }
 
-int Router::h_cost(State const& state)
+int Router::h_cost(State const& state) const noexcept
 {
     int h = 0;
     for (auto const& kvpair : _requests)
