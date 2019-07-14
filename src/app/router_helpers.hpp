@@ -1,3 +1,4 @@
+// helper classes and functions
 #pragma once
 #include <rapidjson/document.h>
 #include <array>
@@ -8,6 +9,7 @@
 
 namespace router
 {
+// coordinate with some helper
 struct Coord
 {
     int x{0};
@@ -32,13 +34,15 @@ std::ostream& operator<<(std::ostream& out, Coord const& coord)
 constexpr std::array<Coord, 4> MOVES{{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}};
 using Route = std::queue<Coord>;
 
+// state of our vehicle
 struct State
 {
-    Coord car_location;
-    std::set<int> passenges;
-    std::set<int> fullfilled;
-    Route route;
+    Coord car_location;        // current locations
+    std::set<int> passengers;  // set of passengers id, could be unordered but hashing is pain
+    std::set<int> fullfilled;  // set of fullfilled request id
+    Route route;               // route to here
 };
+// hashing function for state
 struct State_hash
 {
     std::size_t operator()(State const& state) const
@@ -46,8 +50,10 @@ struct State_hash
         std::size_t seed = 0;
         boost::hash_combine(seed, state.car_location.x);
         boost::hash_combine(seed, state.car_location.y);
-        boost::hash_combine(seed, state.passenges);
+        boost::hash_combine(seed, state.passengers);
         boost::hash_combine(seed, state.fullfilled);
+        // we don't care about route, if location and requests status is same, no need to visit
+        // again
         return seed;
     }
 };
@@ -56,13 +62,15 @@ struct State_compare
     bool operator()(State const& a, State const& b) const
     {
         return a.car_location.x == b.car_location.x && a.car_location.y == b.car_location.y &&
-               a.passenges == b.passenges && a.fullfilled == b.fullfilled;
+               a.passengers == b.passengers && a.fullfilled == b.fullfilled;
+        // we don't care about route, if location and requests status is same, no need to
+        // visit again
     }
 };
 
 struct Request
 {
-    int id{0};
+    int id{0}; // an id for better unique-ness. potentially need to care about overflowing
     std::string name;
     Coord pickup;
     Coord dropoff;
@@ -76,6 +84,7 @@ std::ostream& operator<<(std::ostream& out, Request const& request)
 struct RequestFactory
 {
     static int id;
+    // make request from json
     static std::vector<Request> make_requests(std::string json)
     {
         std::vector<Request> requests;
@@ -112,10 +121,11 @@ struct RequestFactory
                 throw std::invalid_argument("\"end\" needs to be a array of size 2 int");
             }
             Request new_request;
+            // increment id
             new_request.id = id++;
             new_request.name = {name.GetString()};
-            new_request.pickup = {start[0].GetInt(), start[0].GetInt()};
-            new_request.dropoff = {end[0].GetInt(), end[0].GetInt()};
+            new_request.pickup = {start[0].GetInt(), start[1].GetInt()};
+            new_request.dropoff = {end[0].GetInt(), end[1].GetInt()};
             requests.push_back(new_request);
         }
         return requests;

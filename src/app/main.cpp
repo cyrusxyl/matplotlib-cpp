@@ -5,20 +5,15 @@
 
 int main(int /*argc*/, char** /*argv*/)
 {
-    std::string json =
-        R"({"requests":[{"name":"Cyrus", "start":[0, 0], "end":[9, 9]}, {"name":"Jess", "start":[9, 9], "end":[2, 2]}]})";
-
-    auto requests = router::RequestFactory::make_requests(json);
+    std::string json_1 =
+        R"({"requests":[{"name":"Cyrus", "start":[0, 1], "end":[3, 3]}, {"name":"Jess", "start":[0, 2], "end":[2, 2]}]})";
 
     router::Router router{10, 10, {0, 0}};
-    // router::Request request1{0, "cyrus", {0, 0}, {9, 9}};
-    // router::Request request2{1, "jess", {9, 9}, {2, 2}};
-    router.navigate({requests});
-    router.navigate({});
-    router.navigate({});
-    router.navigate({});
-    // router.navigate({request2});
-    router.navigate({});
-    router.navigate({});
+    router.navigate_json(json_1);
+    router.navigate_json(R"({"requests":[]})");
+    router.navigate_json(R"({"requests":[]})");
+    router.navigate_json("");
+    router.navigate_json(R"({"requests":[{"name":"Novak", "start":[2, 1], "end":[3, 3]}]})");
+    
     return EXIT_SUCCESS;
 }
