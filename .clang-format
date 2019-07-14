@@ -8,6 +8,7 @@ AllowShortIfStatementsOnASingleLine: 'false'
 AllowShortLoopsOnASingleLine: 'false'
 BreakBeforeBraces: Allman
 Cpp11BracedListStyle: 'true'
+ColumnLimit: 100
 IndentWidth: '4'
 SortIncludes: 'true'
 SortUsingDeclarations: 'true'

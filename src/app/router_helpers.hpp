@@ -55,8 +55,7 @@ struct State_compare
 {
     bool operator()(State const& a, State const& b) const
     {
-        return a.car_location.x == b.car_location.x &&
-               a.car_location.y == b.car_location.y &&
+        return a.car_location.x == b.car_location.x && a.car_location.y == b.car_location.y &&
                a.passenges == b.passenges && a.fullfilled == b.fullfilled;
     }
 };
@@ -70,8 +69,7 @@ struct Request
 };
 std::ostream& operator<<(std::ostream& out, Request const& request)
 {
-    out << request.name << " from " << request.pickup << " to "
-        << request.dropoff;
+    out << request.name << " from " << request.pickup << " to " << request.dropoff;
     return out;
 }
 

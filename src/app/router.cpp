@@ -3,10 +3,7 @@
 
 namespace router
 {
-Router::Router(int x, int y, Coord start)
-    : _map_x{x}, _map_y{y}, _curr_state{start, {}, {}, {}}
-{
-}
+Router::Router(int x, int y, Coord start) : _map_x{x}, _map_y{y}, _curr_state{start, {}, {}, {}} {}
 
 void Router::navigate(std::vector<Request> const& requests)
 {
@@ -15,17 +12,16 @@ void Router::navigate(std::vector<Request> const& requests)
         if (_curr_route.empty())
         {
             std::cout << "\nWaiting" << '\n';
-            update_state(_curr_state, _curr_state.car_location);
+            update_state(_curr_state, _curr_state.car_location, true);
             return;
         }
-        std::cout << "\nFinishing route: length remaining = "
-                  << _curr_route.size() << '\n';
+        std::cout << "\nFinishing route: length remaining = " << _curr_route.size() << '\n';
         auto coord = _curr_route.front();
         _curr_route.pop();
-        update_state(_curr_state, coord);
+        update_state(_curr_state, coord, true);
         return;
     }
-    std::cout << "\nNew request" << '\n';
+    std::cout << "\nNew request: planning" << '\n';
     for (auto const& request : requests)
     {
         _requests[request.id] = request;
@@ -36,7 +32,7 @@ void Router::navigate(std::vector<Request> const& requests)
     _curr_route = BFS();
     auto coord = _curr_route.front();
     _curr_route.pop();
-    update_state(_curr_state, coord);
+    update_state(_curr_state, coord, true);
     cleanup_request();
     // traverse(_curr_route);
 }
@@ -116,40 +112,44 @@ Router::~Router()
     }
     while (!_curr_route.empty())
     {
-        std::cout << "\nFinishing route: length remaining = "
-                  << _curr_route.size() << '\n';
+        std::cout << "\nFinishing route: length remaining = " << _curr_route.size() << '\n';
         auto coord = _curr_route.front();
         _curr_route.pop();
-        update_state(_curr_state, coord);
+        update_state(_curr_state, coord, true);
     }
     std::cout << "-----------------FINISHED----------------\n";
 }
 
-void Router::update_state(State& state, Coord const& coord)
+void Router::update_state(State& state, Coord const& coord, bool print) const noexcept
 {
     state.car_location = coord;
-    int idx = coord_to_idx(coord);
-    std::cout << "-----------------------------------------\n";
-    std::cout << "Car location:" << state.car_location << '\n';
-    perform_pickup(idx, state.passenges, state.fullfilled, true);
-    perform_dropoff(idx, state.passenges, state.fullfilled, true);
-    std::cout << "Passenger:\n";
-    for (auto id : state.passenges)
+    if (print)
     {
-        std::cout << '\t' << _requests.at(id) << '\n';
+        std::cout << "-----------------------------------------\n";
+        std::cout << "Car location:" << state.car_location << '\n';
     }
-    std::cout << "-----------------------------------------\n";
+    int idx = coord_to_idx(coord);
+    perform_pickup(idx, state.passenges, state.fullfilled, print);
+    perform_dropoff(idx, state.passenges, state.fullfilled, print);
+    if (print)
+    {
+        std::cout << "Passenger:\n";
+        for (auto id : state.passenges)
+        {
+            std::cout << '\t' << _requests.at(id) << '\n';
+        }
+        std::cout << "-----------------------------------------\n";
+    }
 }
 
 Route Router::BFS()
 {
     std::queue<State> queue;
     // in case we can pickup right away
-    int idx = coord_to_idx(_curr_state.car_location);
+
     auto copy_state = _curr_state;
-    perform_pickup(idx, copy_state.passenges, copy_state.fullfilled);
-    perform_dropoff(idx, copy_state.passenges, copy_state.fullfilled);
     copy_state.route.push(copy_state.car_location);
+    update_state(copy_state, copy_state.car_location);
     queue.push(copy_state);
     while (!queue.empty())
     {
@@ -178,12 +178,9 @@ std::vector<State> Router::get_neighbors(const State& curr) const noexcept
         {
             continue;
         }
-        State new_state{new_location, curr.passenges, curr.fullfilled,
-                        curr.route};
+        State new_state{new_location, curr.passenges, curr.fullfilled, curr.route};
         new_state.route.push(new_location);
-        int new_idx = coord_to_idx(new_location);
-        perform_pickup(new_idx, new_state.passenges, new_state.fullfilled);
-        perform_dropoff(new_idx, new_state.passenges, new_state.fullfilled);
+        update_state(new_state, new_location);
         if (_visited.find(new_state) != _visited.end())
         {
             continue;

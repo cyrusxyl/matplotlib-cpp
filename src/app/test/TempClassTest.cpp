@@ -18,8 +18,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-std::unordered_set<router::State, router::State_hash, router::State_compare>
-    visited{};
+std::unordered_set<router::State, router::State_hash, router::State_compare> visited{};
 router::State a;
 a.passenges.insert(1);
 a.passenges.insert(2);
@@ -29,7 +28,8 @@ router::State b;
 b.passenges.insert(2);
 b.passenges.insert(1);
 
-if(visited.find(b) != visited.end()) {
+if (visited.find(b) != visited.end())
+{
     std::cout << "what?" << '\n';
 }
 

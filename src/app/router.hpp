@@ -25,8 +25,7 @@ private:
 
     inline bool is_valid(Coord const& coord) const noexcept
     {
-        return coord.x >= 0 && coord.y >= 0 && coord.x < _map_x &&
-               coord.y < _map_y;
+        return coord.x >= 0 && coord.y >= 0 && coord.x < _map_x && coord.y < _map_y;
     }
 
     inline int coord_to_idx(Coord const& coord) const noexcept
@@ -44,7 +43,7 @@ private:
                          bool print = false) const noexcept;
     Route BFS();
     void traverse(Route route);
-    void update_state(State& state, Coord const& coord);
+    void update_state(State& state, Coord const& coord, bool print = false) const noexcept;
     void cleanup_request();
 };
 
