@@ -39,7 +39,7 @@ struct State
 {
     Coord car_location;        // current locations
     std::set<int> passengers;  // set of passengers id, could be unordered but hashing is pain
-    std::set<int> fullfilled;  // set of fullfilled request id
+    std::set<int> fulfilled;  // set of fulfilled request id
     Route route;               // route to here
 };
 // hashing function for state
@@ -51,7 +51,7 @@ struct State_hash
         boost::hash_combine(seed, state.car_location.x);
         boost::hash_combine(seed, state.car_location.y);
         boost::hash_combine(seed, state.passengers);
-        boost::hash_combine(seed, state.fullfilled);
+        boost::hash_combine(seed, state.fulfilled);
         // we don't care about route, if location and requests status is same, no need to visit
         // again
         return seed;
@@ -62,7 +62,7 @@ struct State_compare
     bool operator()(State const& a, State const& b) const
     {
         return a.car_location.x == b.car_location.x && a.car_location.y == b.car_location.y &&
-               a.passengers == b.passengers && a.fullfilled == b.fullfilled;
+               a.passengers == b.passengers && a.fulfilled == b.fulfilled;
         // we don't care about route, if location and requests status is same, no need to
         // visit again
     }

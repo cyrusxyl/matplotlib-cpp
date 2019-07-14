@@ -39,12 +39,12 @@ private:
     // try pickup at a location with given state
     void perform_pickup(int location_idx,
                         std::set<int>& passengers,
-                        std::set<int>& fullfilled,
+                        std::set<int>& fulfilled,
                         bool print = false) const noexcept;
     // try drop at a location with given state
     void perform_dropoff(int location_idx,
                          std::set<int>& passengers,
-                         std::set<int>& fullfilled,
+                         std::set<int>& fulfilled,
                          bool print = false) const noexcept;
     // BFS/Dijkstra
     Route BFS() const;

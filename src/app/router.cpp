@@ -75,8 +75,8 @@ void Router::navigate(std::vector<Request> const& requests)
 
 void Router::cleanup_request()
 {
-    // for all fullfilled request
-    for (auto id : _curr_state.fullfilled)
+    // for all fulfilled request
+    for (auto id : _curr_state.fulfilled)
     {
         // remove from location and remove from request list
         auto pickup_location = coord_to_idx(_requests[id].pickup);
@@ -85,12 +85,12 @@ void Router::cleanup_request()
         _dropoffs[dropoff_location].erase(id);
         _requests.erase(id);
     }
-    _curr_state.fullfilled = {};
+    _curr_state.fulfilled = {};
 }
 
 void Router::perform_pickup(int location_idx,
                             std::set<int>& passengers,
-                            std::set<int>& fullfilled,
+                            std::set<int>& fulfilled,
                             bool print) const noexcept
 {
     // a list to print out information
@@ -101,8 +101,8 @@ void Router::perform_pickup(int location_idx,
     {
         for (auto id : pickup_it->second)
         {
-            // and is not fullfilled
-            if (fullfilled.find(id) == fullfilled.end())
+            // and is not fulfilled
+            if (fulfilled.find(id) == fulfilled.end())
             {
                 // pickup
                 passengers.insert(id);
@@ -122,7 +122,7 @@ void Router::perform_pickup(int location_idx,
 
 void Router::perform_dropoff(int location_idx,
                              std::set<int>& passengers,
-                             std::set<int>& fullfilled,
+                             std::set<int>& fulfilled,
                              bool print) const noexcept
 {
     std::vector<int> dropoff_list;
@@ -136,7 +136,7 @@ void Router::perform_dropoff(int location_idx,
             if (passengers.erase(id) != 0)
             {
                 // dropoff
-                fullfilled.insert(id);
+                fulfilled.insert(id);
                 dropoff_list.push_back(id);
             }
         }
@@ -161,8 +161,8 @@ void Router::update_state(State& state, Coord const& coord, bool print) const no
     }
     // perform actions if needed
     int idx = coord_to_idx(coord);
-    perform_pickup(idx, state.passengers, state.fullfilled, print);
-    perform_dropoff(idx, state.passengers, state.fullfilled, print);
+    perform_pickup(idx, state.passengers, state.fulfilled, print);
+    perform_dropoff(idx, state.passengers, state.fulfilled, print);
     if (print)
     {
         std::cout << "Passenger:\n";
@@ -187,7 +187,7 @@ Route Router::BFS() const
     while (!queue.empty())
     {
         auto cs = queue.front();
-        if (cs.fullfilled.size() == _requests.size())
+        if (cs.fulfilled.size() == _requests.size())
         {
             return cs.route;
         }
@@ -219,7 +219,7 @@ Route Router::Astar() const
     while (!queue.empty())
     {
         auto cs = queue.top();
-        if (cs.fullfilled.size() == _requests.size())
+        if (cs.fulfilled.size() == _requests.size())
         {
             return cs.route;
         }
@@ -242,8 +242,8 @@ int Router::h_cost(State const& state) const noexcept
     {
         auto const& id = kvpair.first;
         auto const& request = kvpair.second;
-        // if fullfilled, no cost
-        if (state.fullfilled.find(id) != state.fullfilled.end())
+        // if fulfilled, no cost
+        if (state.fulfilled.find(id) != state.fulfilled.end())
         {
             continue;
         }
@@ -273,7 +273,7 @@ std::vector<State> Router::get_neighbors(const State& curr) const noexcept
         {
             continue;
         }
-        State new_state{new_location, curr.passengers, curr.fullfilled, curr.route};
+        State new_state{new_location, curr.passengers, curr.fulfilled, curr.route};
         new_state.route.push(new_location);
         update_state(new_state, new_location);
         // disgard if seen, see State_hash and State_compare for more details

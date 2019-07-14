@@ -1,134 +1,41 @@
-# C++ Template Project
+#Carpool Router
+## Setup
+This project uses cmake and conan, which can be set up with following commands.
+`pip install cmake`  
+`pip install conan`  
+Conan is used to fetch dependencies, in this project, `gtest` and `boost`is used. Packages are fetched from `conan-center`
+### gtest
+Only used for testing purpose.
+In this sample I only wrote limited amount of tests to get the program to work, potentially a lot more can be tested.
+### boost
+Used for hashing function, for checking visited state in graph search
 
-This repo aims to serve as a template for C++ projects to fork off. It integrates static analyzers with the 
-CI and build systems to support development of high quality code.
+## Compile
+Ideally cmake would take care of everything.
+In project root folder  
+`mkdir build && cd build`  
+`cmake ..`  
+`make`
+should do the job, including sorting out conan dependencies
 
-## Prerequisites
+## JSON-parsing
+Used thirdparty library rapidjson from Tencent.
+With a factory, read json input as a string, creates a vector of `Request` objects.  
+Some limitations:  
+Run time parsing, potentially we could do compile time parse as see from CppCon 2017 "constexpr all the things", and at compile time turn json into objects. But considering the usecase, where request are also generated from some other functions, this should be good enough.  
+Json as string: user needs to input the json element as a string.  
+Tuple as array: tuples are not supported with rapidjson, so replaced with array
 
-All the pre-requisites to compile this code are documented in the [Dockerfile](./docker/Dockerfile). The CI
-system uses an image built with this Dockerfile to test changes.
+## Algorithms
+If no request is given, either finish previous route, or stay put if no current route. (We could also greedily move to the center of the map in this case, but I didn't implement this).  
+If there is request, fill out the request information in the router so that I can search:  
+Request by ID  
+List of pickup requests ID by coordinate  
+List of dropoff requests ID by coordinate  
+All in O(1) in average case.
 
-Notes
-1. If installing pip3 depedencies, ensure you either use `pipenv` or `pip3 install --user <lib>` 
-so that you do not pollute your system python space.
-2. If adding dependencies, prefer using `conan` for custom packages.
+`State` serves as graph search node, contains vehicle location, who's in the car and who's been dropped off. Also keeps track of the route.  
+Neighbor are generated from `State` and the 4 moves, by moving and perform pickups and dropoffs. If a `State` is at a location that's been visit with the same passengers and dropoffs, it will not be visited again, as the previous visit is guaranteed to be the fast route.
 
-### Conan Setup
-
-The [Conan](https://conan.io) package manager is used to manage project's external
-dependencies. This section describes the process of setting it up.  Installation is as simple as running
-
-```
-pip3 install --user conan
-```
-
-#### Creating Profiles
-We need to setup a Conan profile — a list of properties that characterize the
-environment.  The following commands will create a new profile called `default` and set it up
-for Ubuntu 16.04 environment.  If you are using several profiles, you may want to choose a
-more descriptive name for it.
-
-```
-# create new profile called 'default'
-conan profile new default --detect
-# modify settings of the 'default' profile
-conan profile update settings.compiler.version=5.4 default
-conan profile update settings.compiler.libcxx=libstdc++11 default
-```
-
-At the moment, there exist precompiled versions of the packages needed by
-the project for this particular profile:
-
-```
-os=Linux
-arch=x86_64
-compiler=gcc
-compiler.version=5.4
-compiler.libcxx=libstdc++11
-build_type=Release
-```
-
-Note that you can have multiple profiles and also modify existing ones when needed.
-For more details see the Conan [Getting Started](https://docs.conan.io/en/latest/getting_started.html) guide.
-
-#### Setting up Remotes
-
-Using the `setupConan.sh` script in [Ottomatika Scripts](https://bitbucket.ptc.delphiauto.net/bitbucket/projects/OTTO/repos/scripts/browse/setupConan.sh),
-set up your conan instance locally to connect to the registry.
-
-## Compilation
-The first step is to get the source code, which you can do by
-```
-git clone <repository>
-```
-
-Go somewhere preferably _outside_ of the source tree and create a folder for the build:
-
-```
-mkdir build && cd build
-```
-
-By default, CMake will take care of installing Conan dependencies, so you just need to run:
-
-```
-cmake <repo_directory>
-```
-
- If you want to use a Conan profile other then the default one, it can be passed to
- CMake via the `CONAN_PROFILE` option
-```
-cmake <repo_directory> -DCONAN_PROFILE=<profile>
-```
-
-If you prefer to use [Ninja](https://ninja-build.org/) as your build system,
-remember to pass `-G Ninja` to `cmake`.  
-```
-cmake <repo_directory> -G Ninja -DCONAN_PROFILE=<profile>
-```
-
-You can now build the project :
-
-```
-cmake --build . [-- -jN]
-ctest
-```
-
-As always, you may use your build system command directly (e.g., `make` or `ninja`) instead
-of calling the more cumbersome `cmake --build .`.
-
-CMake will use the profile name specified by  `CONAN_PROFILE` option.  If this variable
-is not explicitly set, the `default` profile is used. Alternatively, if you do not want
-CMake to handle the Conan installation, you can disable this functionality
-by setting `CONAN_AUTO_INSTALL` to `OFF`.
-
-## Misc
-
-### Code Sanitizers
-
-Code Sanitizing is an instrumentation technique that adds additional assembly instructions
-into the generated code to catch particular events, which typically correspond to
-bugs and errors.  There are a number of different sanitizers that can be enabled
-at the moment by passing the corresponding `-DSANITIZE_xxx=ON` to the configuration stage.
-
-- `SANITIZE_ADDRESS`
-- `SANITIZE_LEAK`
-- `SANITIZE_THREAD`
-- `SANITIZE_UNDEFINED`
-
-Leak Sanitizers is a subset of the Address Sanitizer, so running the
-latter already includes all the checks of the former.  Note also, that most
-sanitizers are incompatible with each other, and it is preferable not to combine them.
-An exception is the pair of Undefined Behavior and Thread sanitizers, which may
-be combined.
-
-The project is setup in a way whereby when any of the `SANITIZE_xxx` options is enabled,
-all libraries and executables will be compiled with the appropriate flags.
-If you need to enable the sanitizing tools for a subset of the targets only,
-set `SANITIZE_ALL_TARGETS=OFF` and then add the call `add_sanitizers(<target>)`
-for your targets of interest.
-
-If you wish to exclude specific targets from being sanitized, you can use the 
-`EXCLUDE_FROM_SANITIZE_<SAN_NAME>` option. 
-
-Note: Sanitizers are useful for catching bugs while you verify your code, but are not 
-suitable for use in production.
+I tested out BFS/Dijkstra first but it was taking too much time for longer routes. Then used A* for better performance.
+For heuristic, I used the minimum distance to fulfill the request furthest from finish.
