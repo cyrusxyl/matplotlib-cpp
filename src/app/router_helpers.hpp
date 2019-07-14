@@ -97,7 +97,8 @@ struct RequestFactory
             {
                 throw std::invalid_argument("each reqest to have \"name\", \"start\", and \"end\"");
             }
-            if (!(*it)["name"].IsString())
+            auto const& name = (*it)["name"];
+            if (!name.IsString())
             {
                 throw std::invalid_argument("\"name\" needs to be a string");
             }
@@ -113,7 +114,7 @@ struct RequestFactory
             }
             Request new_request;
             new_request.id = id++;
-            new_request.name = {it->GetString()};
+            new_request.name = {name.GetString()};
             new_request.pickup = {start[0].GetInt(), start[0].GetInt()};
             new_request.dropoff= {end[0].GetInt(), end[0].GetInt()};
             requests.push_back(new_request);

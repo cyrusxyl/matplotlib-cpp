@@ -108,6 +108,7 @@ Router::~Router()
     if (_curr_route.empty())
     {
         std::cout << "-----------------FINISHED----------------\n";
+        return;
     }
     while (!_curr_route.empty())
     {
