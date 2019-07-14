@@ -9,6 +9,7 @@ class Router
 {
 public:
     Router(int x, int y, Coord start);
+    ~Router();
     void navigate(std::vector<Request> const&);
     std::vector<State> get_neighbors(State const& curr) const noexcept;
 
@@ -19,8 +20,8 @@ private:
     Route _curr_route;
     std::unordered_set<State, State_hash, State_compare> _visited{};
     std::unordered_map<int, Request> _requests{};
-    std::unordered_map<int, std::vector<int>> _pickups{};
-    std::unordered_map<int, std::vector<int>> _dropoffs{};
+    std::unordered_map<int, std::set<int>> _pickups{};
+    std::unordered_map<int, std::set<int>> _dropoffs{};
 
     inline bool is_valid(Coord const& coord) const noexcept
     {
@@ -44,6 +45,7 @@ private:
     Route BFS();
     void traverse(Route route);
     void update_state(State& state, Coord const& coord);
+    void cleanup_request();
 };
 
 }  // namespace router

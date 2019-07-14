@@ -18,7 +18,8 @@ void Router::navigate(std::vector<Request> const& requests)
             update_state(_curr_state, _curr_state.car_location);
             return;
         }
-        std::cout << "\nFinishing route" << '\n';
+        std::cout << "\nFinishing route: length remaining = "
+                  << _curr_route.size() << '\n';
         auto coord = _curr_route.front();
         _curr_route.pop();
         update_state(_curr_state, coord);
@@ -28,15 +29,29 @@ void Router::navigate(std::vector<Request> const& requests)
     for (auto const& request : requests)
     {
         _requests[request.id] = request;
-        _pickups[coord_to_idx(request.pickup)].push_back(request.id);
-        _dropoffs[coord_to_idx(request.dropoff)].push_back(request.id);
+        _pickups[coord_to_idx(request.pickup)].insert(request.id);
+        _dropoffs[coord_to_idx(request.dropoff)].insert(request.id);
     }
     _visited = {};
     _curr_route = BFS();
     auto coord = _curr_route.front();
     _curr_route.pop();
     update_state(_curr_state, coord);
+    cleanup_request();
     // traverse(_curr_route);
+}
+
+void Router::cleanup_request()
+{
+    for (auto id : _curr_state.fullfilled)
+    {
+        auto pickup_location = coord_to_idx(_requests[id].pickup);
+        auto dropoff_location = coord_to_idx(_requests[id].dropoff);
+        _pickups[pickup_location].erase(id);
+        _dropoffs[dropoff_location].erase(id);
+        _requests.erase(id);
+    }
+    _curr_state.fullfilled = {};
 }
 
 void Router::perform_pickup(int location_idx,
@@ -93,18 +108,21 @@ void Router::perform_dropoff(int location_idx,
     }
 }
 
-void Router::traverse(Route route)
+Router::~Router()
 {
-    std::cout << "---------------------TRAVERSE--------------------\n";
-    auto copy_state = _curr_state;
-    std::cout << "Starting at (" << copy_state.car_location << '\n';
-    while (!route.empty())
+    if (_curr_route.empty())
     {
-        auto coord = route.front();
-        route.pop();
-        update_state(copy_state, coord);
+        std::cout << "-----------------FINISHED----------------\n";
     }
-    std::cout << "-------------------TRAVERSE END------------------\n";
+    while (!_curr_route.empty())
+    {
+        std::cout << "\nFinishing route: length remaining = "
+                  << _curr_route.size() << '\n';
+        auto coord = _curr_route.front();
+        _curr_route.pop();
+        update_state(_curr_state, coord);
+    }
+    std::cout << "-----------------FINISHED----------------\n";
 }
 
 void Router::update_state(State& state, Coord const& coord)
@@ -126,7 +144,13 @@ void Router::update_state(State& state, Coord const& coord)
 Route Router::BFS()
 {
     std::queue<State> queue;
-    queue.push(_curr_state);
+    // in case we can pickup right away
+    int idx = coord_to_idx(_curr_state.car_location);
+    auto copy_state = _curr_state;
+    perform_pickup(idx, copy_state.passenges, copy_state.fullfilled);
+    perform_dropoff(idx, copy_state.passenges, copy_state.fullfilled);
+    copy_state.route.push(copy_state.car_location);
+    queue.push(copy_state);
     while (!queue.empty())
     {
         auto cs = queue.front();
