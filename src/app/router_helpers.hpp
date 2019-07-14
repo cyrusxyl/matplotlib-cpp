@@ -23,6 +23,12 @@ struct Coord
         return std::abs(x - other.x) + std::abs(y - other.y);
     }
 };
+
+std::ostream& operator<<(std::ostream& out, Coord const& coord)
+{
+    out << '(' << coord.x << ',' << coord.y << ')';
+    return out;
+}
 constexpr std::array<Coord, 4> MOVES{{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}};
 using Route = std::queue<Coord>;
 
@@ -62,5 +68,11 @@ struct Request
     Coord pickup;
     Coord dropoff;
 };
+std::ostream& operator<<(std::ostream& out, Request const& request)
+{
+    out << request.name << " from " << request.pickup << " to "
+        << request.dropoff;
+    return out;
+}
 
 }  // namespace router

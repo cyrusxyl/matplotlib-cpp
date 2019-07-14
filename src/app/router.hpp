@@ -33,7 +33,17 @@ private:
         return coord.y * _map_x + coord.x;
     }
 
+    void perform_pickup(int location_idx,
+                        std::set<int>& passenges,
+                        std::set<int>& fullfilled,
+                        bool print = false) const noexcept;
+    void perform_dropoff(int location_idx,
+                         std::set<int>& passenges,
+                         std::set<int>& fullfilled,
+                         bool print = false) const noexcept;
     Route BFS();
+    void traverse(Route route);
+    void update_state(State& state, Coord const& coord);
 };
 
 }  // namespace router

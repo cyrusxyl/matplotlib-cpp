@@ -12,25 +12,115 @@ void Router::navigate(std::vector<Request> const& requests)
 {
     if (requests.empty())
     {
-        // update_state(_curr_route.front());
-        // _curr_route.pop();
+        if (_curr_route.empty())
+        {
+            std::cout << "\nWaiting" << '\n';
+            update_state(_curr_state, _curr_state.car_location);
+            return;
+        }
+        std::cout << "\nFinishing route" << '\n';
+        auto coord = _curr_route.front();
+        _curr_route.pop();
+        update_state(_curr_state, coord);
         return;
     }
+    std::cout << "\nNew request" << '\n';
     for (auto const& request : requests)
     {
         _requests[request.id] = request;
         _pickups[coord_to_idx(request.pickup)].push_back(request.id);
         _dropoffs[coord_to_idx(request.dropoff)].push_back(request.id);
     }
-    if (_requests.empty())
-    {
-        return;
-    }
+    _visited = {};
     _curr_route = BFS();
-    // for (auto const& c : _curr_route)
-    // {
-    //     std::cout << '(' << c.x << ',' << c.y << ")\n";
-    // }
+    auto coord = _curr_route.front();
+    _curr_route.pop();
+    update_state(_curr_state, coord);
+    // traverse(_curr_route);
+}
+
+void Router::perform_pickup(int location_idx,
+                            std::set<int>& passenges,
+                            std::set<int>& fullfilled,
+                            bool print) const noexcept
+{
+    std::vector<int> pickup_list;
+    auto pickup_it = _pickups.find(location_idx);
+    if (pickup_it != _pickups.end())
+    {
+        for (auto id : pickup_it->second)
+        {
+            if (fullfilled.find(id) == fullfilled.end())
+            {
+                passenges.insert(id);
+                pickup_list.push_back(id);
+            }
+        }
+    }
+    if (print)
+    {
+        for (auto id : pickup_list)
+        {
+            std::cout << "Pickup: " << _requests.at(id) << '\n';
+        }
+    }
+}
+
+void Router::perform_dropoff(int location_idx,
+                             std::set<int>& passenges,
+                             std::set<int>& fullfilled,
+                             bool print) const noexcept
+{
+    std::vector<int> dropoff_list;
+    auto dropoff_it = _dropoffs.find(location_idx);
+    if (dropoff_it != _dropoffs.end())
+    {
+        for (auto id : dropoff_it->second)
+        {
+            if (passenges.erase(id) != 0)
+            {
+                fullfilled.insert(id);
+                dropoff_list.push_back(id);
+            }
+        }
+    }
+    if (print)
+    {
+        for (auto id : dropoff_list)
+        {
+            std::cout << "Droffoff: " << _requests.at(id) << '\n';
+        }
+    }
+}
+
+void Router::traverse(Route route)
+{
+    std::cout << "---------------------TRAVERSE--------------------\n";
+    auto copy_state = _curr_state;
+    std::cout << "Starting at (" << copy_state.car_location << '\n';
+    while (!route.empty())
+    {
+        auto coord = route.front();
+        route.pop();
+        update_state(copy_state, coord);
+    }
+    std::cout << "-------------------TRAVERSE END------------------\n";
+}
+
+void Router::update_state(State& state, Coord const& coord)
+{
+    state.car_location = coord;
+    int idx = coord_to_idx(coord);
+    std::cout << "-----------------------------------------\n";
+    std::cout << "Car location:" << state.car_location << '\n';
+    perform_pickup(idx, state.passenges, state.fullfilled, true);
+    perform_dropoff(idx, state.passenges, state.fullfilled, true);
+    std::cout << "Passenger:\n";
+    for (auto id : state.passenges)
+    {
+        std::cout << '\t' << _requests.at(id) << '\n';
+    }
+    std::cout << "-----------------------------------------\n";
 }
 
 Route Router::BFS()
@@ -51,7 +141,7 @@ Route Router::BFS()
             queue.push(ns);
         }
     }
-    return {};
+    throw std::runtime_error("no route found");
 }
 
 std::vector<State> Router::get_neighbors(const State& curr) const noexcept
@@ -68,28 +158,8 @@ std::vector<State> Router::get_neighbors(const State& curr) const noexcept
                         curr.route};
         new_state.route.push(new_location);
         int new_idx = coord_to_idx(new_location);
-        auto pickup_it = _pickups.find(new_idx);
-        if (pickup_it != _pickups.end())
-        {
-            for (auto id : pickup_it->second)
-            {
-                if (new_state.fullfilled.find(id) == new_state.fullfilled.end())
-                {
-                    new_state.passenges.insert(id);
-                }
-            }
-        }
-        auto dropoff_it = _dropoffs.find(new_idx);
-        if (dropoff_it != _dropoffs.end())
-        {
-            for (auto id : dropoff_it->second)
-            {
-                if (new_state.passenges.erase(id) != 0)
-                {
-                    new_state.fullfilled.insert(id);
-                }
-            }
-        }
+        perform_pickup(new_idx, new_state.passenges, new_state.fullfilled);
+        perform_dropoff(new_idx, new_state.passenges, new_state.fullfilled);
         if (_visited.find(new_state) != _visited.end())
         {
             continue;
