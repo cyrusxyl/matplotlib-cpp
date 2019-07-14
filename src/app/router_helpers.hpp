@@ -1,4 +1,5 @@
 #pragma once
+#include <rapidjson/document.h>
 #include <array>
 #include <boost/container_hash/hash.hpp>
 #include <optional>
@@ -72,5 +73,54 @@ std::ostream& operator<<(std::ostream& out, Request const& request)
     out << request.name << " from " << request.pickup << " to " << request.dropoff;
     return out;
 }
+
+struct RequestFactory
+{
+    static int id;
+    static std::vector<Request> make_requests(std::string json)
+    {
+        std::vector<Request> requests;
+        rapidjson::Document document;
+        document.Parse(json.c_str());
+        if (document.HasParseError())
+        {
+            throw std::invalid_argument("json ill defined");
+        }
+        if (!document.HasMember("requests") || !document["requests"].IsArray())
+        {
+            throw std::invalid_argument("need element \"requests\" to be an array");
+        }
+        auto const& json_requests = document["requests"];
+        for (auto it = json_requests.Begin(); it != json_requests.End(); ++it)
+        {
+            if (!it->HasMember("name") || !it->HasMember("start") || !it->HasMember("end"))
+            {
+                throw std::invalid_argument("each reqest to have \"name\", \"start\", and \"end\"");
+            }
+            if (!(*it)["name"].IsString())
+            {
+                throw std::invalid_argument("\"name\" needs to be a string");
+            }
+            auto const& start = (*it)["start"];
+            if (!start.IsArray() || start.Size() != 2)
+            {
+                throw std::invalid_argument("\"start\" needs to be a array of size 2 int");
+            }
+            auto const& end = (*it)["end"];
+            if (!end.IsArray() || end.Size() != 2)
+            {
+                throw std::invalid_argument("\"end\" needs to be a array of size 2 int");
+            }
+            Request new_request;
+            new_request.id = id++;
+            new_request.name = {it->GetString()};
+            new_request.pickup = {start[0].GetInt(), start[0].GetInt()};
+            new_request.dropoff= {end[0].GetInt(), end[0].GetInt()};
+            requests.push_back(new_request);
+        }
+        return requests;
+    }
+};
+int RequestFactory::id = INT_MIN;
 
 }  // namespace router
