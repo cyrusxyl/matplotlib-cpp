@@ -7,11 +7,13 @@ Router::Router(int x, int y, Coord start) : _map_x{x}, _map_y{y}, _curr_state{st
 Router::~Router()
 {
     // finish current route when existing
+    std::cout << "------------------EXISTING---------------\n";
     if (_curr_route.empty())
     {
         std::cout << "-----------------FINISHED----------------\n";
         return;
     }
+    std::cout << "--------------FINISHING ROUTE------------\n";
     while (!_curr_route.empty())
     {
         std::cout << "\nFinishing route: length remaining = " << _curr_route.size() << '\n';

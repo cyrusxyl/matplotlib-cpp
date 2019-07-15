@@ -39,7 +39,7 @@ struct State
 {
     Coord car_location;        // current locations
     std::set<int> passengers;  // set of passengers id, could be unordered but hashing is pain
-    std::set<int> fulfilled;  // set of fulfilled request id
+    std::set<int> fulfilled;   // set of fulfilled request id
     Route route;               // route to here
 };
 // hashing function for state
@@ -70,7 +70,7 @@ struct State_compare
 
 struct Request
 {
-    int id{0}; // an id for better unique-ness. potentially need to care about overflowing
+    int id{0};  // an id for better unique-ness. potentially need to care about overflowing
     std::string name;
     Coord pickup;
     Coord dropoff;
@@ -123,7 +123,7 @@ struct RequestFactory
             Request new_request;
             // increment id
             new_request.id = id++;
-            new_request.name = {name.GetString()};
+            new_request.name = name.GetString();
             new_request.pickup = {start[0].GetInt(), start[1].GetInt()};
             new_request.dropoff = {end[0].GetInt(), end[1].GetInt()};
             requests.push_back(new_request);

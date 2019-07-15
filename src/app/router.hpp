@@ -16,6 +16,8 @@ public:
     void navigate_json(std::string const& json);
     // given a list of requests, perform routing, and step once
     void navigate(std::vector<Request> const& requests);
+    void navigate() { navigate({}); }
+    Route get_route() const noexcept { return _curr_route; }
 
 private:
     const int _map_x{0};  /// map size x
