@@ -18,6 +18,12 @@ In project root folder
 `make`
 should do the job, including sorting out conan dependencies
 
+## Run
+`cd build`  
+`./bin/router_test` to run all tests  
+or  
+`./bin/myapp` to run an example
+
 ## JSON-parsing
 Used thirdparty library rapidjson from Tencent.
 With a factory, read json input as a string, creates a vector of `Request` objects.  
