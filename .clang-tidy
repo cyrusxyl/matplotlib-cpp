@@ -1,0 +1,3 @@
+---
+Checks:           '-*, cppcoreguidelines-*, clang-analyzer-*, google-*, modernize-*, performance-*, portability-*, readability-*'
+WarningsAsErrors: '*'
