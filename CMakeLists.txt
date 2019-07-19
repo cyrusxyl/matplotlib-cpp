@@ -5,6 +5,8 @@ set(PROJECT_NAME MyProject)
 project(${PROJECT_NAME})
 
 set(CMAKE_CXX_COMPILER g++)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Let CMake paths to easily find our custom CMake modules
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
@@ -55,6 +57,7 @@ find_package(StaticAnalysis)
 
 # Directories to include in the build.
 include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(${PROJECT_SOURCE_DIR}/thirdparty)
 
 option(BUILD_APP "Build Example App" ON)
 option(BUILD_DOCS "Build Doxygen documentation" OFF)
