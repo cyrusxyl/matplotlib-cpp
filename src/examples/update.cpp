@@ -1,7 +1,7 @@
 #define _USE_MATH_DEFINES
+#include <matplotlibcpp/matplotlibcpp.h>
 #include <chrono>
 #include <cmath>
-#include <matplotlibcpp/matplotlibcpp.h>
 
 namespace plt = matplotlibcpp;
 

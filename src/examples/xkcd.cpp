@@ -1,7 +1,7 @@
 #define _USE_MATH_DEFINES
+#include <matplotlibcpp/matplotlibcpp.h>
 #include <cmath>
 #include <vector>
-#include <matplotlibcpp/matplotlibcpp.h>
 
 namespace plt = matplotlibcpp;
 

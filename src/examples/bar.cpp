@@ -1,8 +1,8 @@
 #define _USE_MATH_DEFINES
 
+#include <matplotlibcpp/matplotlibcpp.h>
 #include <iostream>
 #include <string>
-#include <matplotlibcpp/matplotlibcpp.h>
 namespace plt = matplotlibcpp;
 
 int main(int argc, char** argv)
