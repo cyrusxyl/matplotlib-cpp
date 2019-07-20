@@ -2,7 +2,7 @@ matplotlib-cpp
 ==============
 
 Forked from lava/matplotlib-cpp.  
-Wrapped in a proper CMakeLists project for easy usage.
+Wrapped in a proper CMake project for easy usage.
 
 See below for functionality details (copied from source repo):
 ___
