@@ -4,6 +4,11 @@ matplotlib-cpp
 Forked from lava/matplotlib-cpp.  
 Wrapped in a proper CMakeLists project for easy usage.
 
+To compile this project:  
+`mkdir build && cd build`  
+`cmake ..`  
+`make`
+
 See below for functionality details (copied from source repo):
 ___
 
@@ -27,7 +32,7 @@ int main() {
 
 **Result:**
 
-![Minimal example](./examples/minimal.png)
+![Minimal example](./resources/minimal.png)
 
 A more comprehensive example:
 ```cpp
@@ -69,7 +74,7 @@ int main()
 
 **Result:**
 
-![Basic example](./examples/basic.png)
+![Basic example](./resources/basic.png)
 
 Alternatively, matplotlib-cpp also supports some C++11-powered syntactic sugar:
 ```cpp
@@ -104,7 +109,7 @@ int main()
 
 **Result:**
 
-![Modern example](./examples/modern.png)
+![Modern example](./resources/modern.png)
 
 Or some *funny-looking xkcd-styled* example:
 ```cpp
@@ -134,7 +139,7 @@ int main() {
 
 **Result:**
 
-![xkcd example](./examples/xkcd.png)
+![xkcd example](./resources/xkcd.png)
 
 When working with vector fields, you might be interested in quiver plots:
 ```cpp
@@ -163,7 +168,7 @@ int main()
 
 **Result:**
 
-![quiver example](./examples/quiver.png)
+![quiver example](./resources/quiver.png)
 
 When working with 3d functions, you might be interested in 3d plots:
 ```cpp
@@ -193,7 +198,7 @@ int main()
 
 **Result:**
 
-![surface example](./examples/surface.png)
+![surface example](./resources/surface.png)
 
 Installation
 ------------
