@@ -1,6 +1,12 @@
 matplotlib-cpp
 ==============
 
+Forked from lava/matplotlib-cpp.  
+Wrapped in a proper CMakeLists project for easy usage.
+
+See below for functionality details (copied from source repo):
+___
+
 Welcome to matplotlib-cpp, possibly the simplest C++ plotting library.
 It is built to resemble the plotting API used by Matlab and matplotlib.
 
