@@ -1,5 +1,5 @@
 #define _USE_MATH_DEFINES
-#include <matplotlibcpp/matplotlibcpp.h>
+#include <matplotlibcpp.h>
 #include <cmath>
 
 using namespace std;

@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD 14)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 include(cmake/macros.cmake)
 
+option(BUILD_EXAMPLES "Build Examples" ON)
+
 default_build_type("Release")
 common_output_dirs()
 
