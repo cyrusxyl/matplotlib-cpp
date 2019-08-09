@@ -7,7 +7,7 @@ class MatplotlibcppConan(ConanFile):
     license = "MIT"
     author = "Cyrus Liu (cyrus.liu@aptiv.com)"
     url = "<Package recipe repository url here, for issues about the package>"
-    description = "<Description of Matplotlibcpp here>"
+    description = "Convenient C++ plotting library via Python Matplotlib"
     topics = ("<Put some tag here>", "<here>", "<and here>")
     settings = "os", "compiler", "build_type", "arch"
     exports_sources = "CMakeLists.txt", "cmake/*", "src/*"
@@ -20,14 +20,10 @@ class MatplotlibcppConan(ConanFile):
         cmake.definitions["BUILD_EXAMPLES"] = False
         cmake.configure()
         cmake.build()
-
-#Explicit way:
-#self.run('cmake %s/hello %s'
-#%(self.source_folder, cmake.command_line))
-#self.run("cmake --build . %s" % cmake.build_config)
+        
     def package(self):
         cmake = CMake(self)
         cmake.install()
-
-    # def package_info(self):
-    #     self.cpp_info.libs = ["hello"]
+        
+    def package_id(self):
+        self.info.header_only()
